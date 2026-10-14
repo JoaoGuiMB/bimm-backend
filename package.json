@@ -19,7 +19,9 @@
     "test:debug": "vitest --inspect-brk --no-file-parallelism",
     "test:e2e": "vitest run --config ./vitest.config.e2e.ts",
     "typecheck": "tsc --noEmit",
-    "format:check": "prettier --check --no-error-on-unmatched-pattern \"src/**/*.ts\" \"test/**/*.ts\""
+    "format:check": "prettier --check --no-error-on-unmatched-pattern \"src/**/*.ts\" \"test/**/*.ts\"",
+    "ingest": "node dist/ingest.js",
+    "ingest:dev": "nest start --entryFile ingest"
   },
   "dependencies": {
     "@nestjs/common": "^12.0.1",

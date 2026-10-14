@@ -6,6 +6,11 @@ export default defineConfig({
     globals: true,
     root: './',
     include: ['test/**/*.e2e-spec.ts'],
-    passWithNoTests: true,
+    globalSetup: ['./test/support/mongo-global-setup.ts'],
+    setupFiles: [
+      './test/support/silence-nest-logger.ts',
+      './test/support/e2e-env.ts',
+    ],
+    hookTimeout: 60_000,
   },
 });

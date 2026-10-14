@@ -6,6 +6,6 @@ export default defineConfig({
     globals: true,
     root: './',
     include: ['src/**/*.spec.ts'],
-    passWithNoTests: true,
+    setupFiles: ['./test/support/silence-nest-logger.ts'],
   },
 });

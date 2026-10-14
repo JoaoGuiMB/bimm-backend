@@ -26,8 +26,6 @@ interface EnvDefaults {
   mongodbUri?: string;
 }
 
-// staging and production have no database default on purpose: a missing
-// MONGODB_URI must stop the boot instead of silently connecting to localhost.
 const ENV_DEFAULTS: Record<AppEnv, EnvDefaults> = {
   development: {
     logLevel: 'debug',
@@ -110,6 +108,6 @@ export function parseConfig(rawEnv: Record<string, unknown>): AppConfig {
   if (!parsed.success) {
     throw new Error(`invalid configuration:\n${z.prettifyError(parsed.error)}`);
   }
-  
+
   return parsed.data;
 }

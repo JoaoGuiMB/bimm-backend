@@ -6,6 +6,6 @@ export default defineConfig({
     globals: true,
     root: './',
     include: ['src/**/*.spec.ts'],
-    setupFiles: ['./test/silence-nest-logger.ts'],
+    setupFiles: ['./test/support/silence-nest-logger.ts'],
   },
 });

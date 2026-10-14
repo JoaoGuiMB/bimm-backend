@@ -47,6 +47,7 @@ const mongodbUri = z
 
 function envSchema(appEnv: AppEnv) {
   const defaults = ENV_DEFAULTS[appEnv];
+
   return z
     .object({
       PORT: z.coerce.number().int().min(1).max(65535).default(3000),

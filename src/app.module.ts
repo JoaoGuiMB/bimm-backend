@@ -1,8 +1,8 @@
 import { Logger, Module, type OnApplicationShutdown } from '@nestjs/common';
-import { ConfigModule } from './config/config.module.js';
-import { DatabaseModule } from './database/database.module.js';
+import { ConfigModule } from './core/config/config.module.js';
+import { DatabaseModule } from './core/database/database.module.js';
+import { LoggerModule } from './core/logger/logger.module.js';
 import { HealthModule } from './health/health.module.js';
-import { LoggerModule } from './logger/logger.module.js';
 
 @Module({
   imports: [ConfigModule, LoggerModule, DatabaseModule, HealthModule],

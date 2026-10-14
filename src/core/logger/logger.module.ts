@@ -9,6 +9,7 @@ import type { AppConfig } from '../config/config.schema.js';
       inject: [ConfigService],
       useFactory: (config: ConfigService<AppConfig, true>) => {
         const log = config.get('log', { infer: true });
+
         return {
           pinoHttp: {
             level: log.level,

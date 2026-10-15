@@ -173,7 +173,7 @@ export class IngestionService {
     const batch = context.pending.splice(0);
 
     try {
-      const outcome = await this.writeWithRetry(batch, context.startedAt);
+      const outcome = await this.writeWithRetry(batch, context);
 
       context.stats.makesWritten += outcome.written;
 
@@ -202,21 +202,21 @@ export class IngestionService {
 
   private async writeWithRetry(
     batch: VehicleMake[],
-    ingestedAt: Date,
+    { runId, startedAt }: RunContext,
   ): Promise<UpsertOutcome> {
     for (const delayMs of WRITE_RETRY_DELAYS_MS) {
       try {
-        return await this.makes.upsertMany(batch, ingestedAt);
+        return await this.makes.upsertMany(batch, startedAt);
       } catch (error) {
         this.logger.warn(
-          { err: error, size: batch.length, retryInMs: delayMs },
+          { runId, err: error, size: batch.length, retryInMs: delayMs },
           'batch write failed, retrying',
         );
         await new Promise((resolve) => setTimeout(resolve, delayMs));
       }
     }
 
-    return this.makes.upsertMany(batch, ingestedAt);
+    return this.makes.upsertMany(batch, startedAt);
   }
 
   private recordFailures(context: RunContext, makeIds: number[]): void {

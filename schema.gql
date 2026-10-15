@@ -1,0 +1,85 @@
+# ------------------------------------------------------
+# THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
+# ------------------------------------------------------
+
+"""
+A vehicle make registered with NHTSA, with the vehicle types it produces.
+"""
+type Make {
+  """NHTSA make id."""
+  makeId: Int!
+
+  """Make name in upper case, as published by NHTSA, e.g. "ASTON MARTIN"."""
+  makeName: String!
+
+  """Vehicle types produced by this make. Empty when NHTSA lists none."""
+  vehicleTypes: [VehicleType!]!
+}
+
+"""A page of makes, ordered by makeId ascending."""
+type MakeConnection {
+  """Makes in this page."""
+  edges: [MakeEdge!]!
+
+  """Pagination state."""
+  pageInfo: PageInfo!
+
+  """Total number of makes matching the filter, across all pages."""
+  totalCount: Int!
+}
+
+"""A make together with its pagination cursor."""
+type MakeEdge {
+  """Opaque cursor; pass it as `after` to continue after this make."""
+  cursor: String!
+
+  """The make."""
+  node: Make!
+}
+
+"""Conditions a make must meet. All set fields must match."""
+input MakeFilterInput {
+  """Case-insensitive start of the make name, e.g. "aston"."""
+  namePrefix: String
+
+  """Only makes that produce this vehicle type id."""
+  vehicleTypeId: Int
+}
+
+"""Pagination state of a connection."""
+type PageInfo {
+  """Cursor of the last make in this page, null for an empty page."""
+  endCursor: String
+
+  """Whether more makes exist after this page."""
+  hasNextPage: Boolean!
+}
+
+type Query {
+  """One make by its NHTSA id, or null if it is unknown."""
+  make(
+    """NHTSA make id."""
+    makeId: Int!
+  ): Make
+
+  """Makes with their vehicle types, paginated by cursor."""
+  makes(
+    """Return makes after this cursor, taken from `pageInfo.endCursor`."""
+    after: String
+
+    """Restrict the makes returned."""
+    filter: MakeFilterInput
+
+    """Number of makes to return, from 1 to 100."""
+    first: Int! = 50
+  ): MakeConnection!
+}
+
+"""A kind of vehicle a make produces, as classified by NHTSA."""
+type VehicleType {
+  """NHTSA vehicle type id."""
+  typeId: Int!
+
+  """Vehicle type name, e.g. "Passenger Car"."""
+  typeName: String!
+}

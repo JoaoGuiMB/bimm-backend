@@ -1,0 +1,71 @@
+name: ci
+
+on:
+  push:
+    branches: [main, staging]
+  pull_request:
+    branches: [main, staging]
+
+env:
+  MONGOMS_DISABLE_POSTINSTALL: 1
+
+jobs:
+  checks:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+      - run: npm ci
+      - run: npm run lint
+      - run: npm run format:check
+      - run: npm run typecheck
+      - run: npm run build
+      - uses: actions/upload-artifact@v4
+        with:
+          name: dist
+          path: dist/
+
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+      - uses: actions/cache@v4
+        with:
+          path: ~/.cache/mongodb-binaries
+          key: mongodb-binaries-8.2.12-${{ runner.os }}
+      - run: npm ci
+      - run: npm run test:cov -- --reporter=default --reporter=junit --outputFile.junit=reports/junit-unit.xml
+      - run: npm run test:e2e -- --reporter=default --reporter=junit --outputFile.junit=reports/junit-e2e.xml
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: test-reports
+          path: |
+            coverage/
+            reports/
+
+  docker:
+    needs: [checks, test]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - name: Pick the environment tag
+        id: env
+        run: |
+          branch="${{ github.base_ref || github.ref_name }}"
+          if [ "$branch" = "main" ]; then echo "name=production" >> "$GITHUB_OUTPUT"; else echo "name=staging" >> "$GITHUB_OUTPUT"; fi
+      - uses: docker/setup-buildx-action@v3
+      - uses: docker/build-push-action@v6
+        with:
+          context: .
+          push: false
+          tags: bimm-backend:${{ steps.env.outputs.name }}-${{ github.sha }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
